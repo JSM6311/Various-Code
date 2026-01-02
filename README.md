@@ -23,6 +23,10 @@ Small GUI that helps to copy files to and from a VM.  May have the odd bug or tw
 ### Manage-KeePass
 Manage KeePass database from within PowerShell
 ### 
+
+### Manage-Prescription
+Automated prescription management system with pharmacist oversight. Manages medicine database, creates prescriptions with safety checks, and maintains a pharmacist review workflow to ensure all prescriptions are properly validated before dispensing.
+###
  
 ### PasswordGenerator
 GUI form to generate random passwords for you
