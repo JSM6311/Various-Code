@@ -25,7 +25,7 @@ Manage KeePass database from within PowerShell
 ### 
 
 ### Manage-Prescription
-Automated prescription management system with pharmacist oversight. Manages medicine database, creates prescriptions with safety checks, and maintains a pharmacist review workflow to ensure all prescriptions are properly validated before dispensing.
+Automated prescription management system with pharmacist oversight. Manages medicine database, creates prescriptions with safety checks, and maintains a pharmacist review workflow to ensure all prescriptions are properly validated before dispensing. Run Demo-Prescription.ps1 to see the full workflow in action.
 ###
  
 ### PasswordGenerator
