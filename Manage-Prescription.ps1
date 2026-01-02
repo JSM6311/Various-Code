@@ -229,8 +229,10 @@ Function Manage-Prescription
                 # Generate prescription ID - find highest existing ID to avoid collisions
                 $prescriptions = Import-Csv -Path $PrescriptionDatabase
                 $maxID = 0
-                ForEach ($rx in $prescriptions) {
-                    If ($rx.PrescriptionID -match 'RX(\d+)') {
+                # Only process if there are actual prescription records (not just headers)
+                foreach ($rx in $prescriptions) {
+                    If (-not [string]::IsNullOrWhiteSpace($rx.PrescriptionID) -and 
+                        $rx.PrescriptionID -match 'RX(\d+)') {
                         $currentID = [int]$Matches[1]
                         If ($currentID -gt $maxID) {
                             $maxID = $currentID
