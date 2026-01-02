@@ -23,6 +23,12 @@
 .PARAMETER MedicineName
     Name of the medicine
 
+.PARAMETER Category
+    Category or type of medicine (e.g., "Antibiotic", "Pain Relief")
+
+.PARAMETER Warnings
+    Safety warnings and precautions for the medicine
+
 .PARAMETER Dosage
     Dosage information (e.g., "500mg", "10ml")
 
@@ -115,7 +121,7 @@ Function Manage-Prescription
     )
 
     # Initialize databases if they don't exist
-    Function Initialize-Database {
+    Function Initialize-PrescriptionDatabase {
         param($Path, $Headers)
         
         If (-not (Test-Path $Path)) {
@@ -125,7 +131,7 @@ Function Manage-Prescription
     }
 
     # Validate required parameters based on action
-    Function Validate-Parameters {
+    Function Test-PrescriptionParameters {
         Switch ($Action) {
             'AddMedicine' {
                 If ([string]::IsNullOrWhiteSpace($MedicineName)) {
@@ -154,7 +160,7 @@ Function Manage-Prescription
     }
 
     Try {
-        Validate-Parameters
+        Test-PrescriptionParameters
 
         Switch ($Action) {
             'AddMedicine' {
@@ -165,7 +171,7 @@ Function Manage-Prescription
                     Warnings = ""
                     DateAdded = ""
                 }
-                Initialize-Database -Path $MedicineDatabase -Headers $medicineHeaders
+                Initialize-PrescriptionDatabase -Path $MedicineDatabase -Headers $medicineHeaders
 
                 # Check if medicine already exists
                 $medicines = Import-Csv -Path $MedicineDatabase
@@ -202,7 +208,7 @@ Function Manage-Prescription
                     ReviewedDate = ""
                     Notes = ""
                 }
-                Initialize-Database -Path $PrescriptionDatabase -Headers $prescriptionHeaders
+                Initialize-PrescriptionDatabase -Path $PrescriptionDatabase -Headers $prescriptionHeaders
 
                 # Verify medicine exists
                 If (Test-Path $MedicineDatabase) {
@@ -220,10 +226,18 @@ Function Manage-Prescription
                     }
                 }
 
-                # Generate prescription ID
+                # Generate prescription ID - find highest existing ID to avoid collisions
                 $prescriptions = Import-Csv -Path $PrescriptionDatabase
-                $lastID = ($prescriptions | Measure-Object).Count
-                $newPrescriptionID = "RX{0:D5}" -f ($lastID + 1)
+                $maxID = 0
+                ForEach ($rx in $prescriptions) {
+                    If ($rx.PrescriptionID -match 'RX(\d+)') {
+                        $currentID = [int]$Matches[1]
+                        If ($currentID -gt $maxID) {
+                            $maxID = $currentID
+                        }
+                    }
+                }
+                $newPrescriptionID = "RX{0:D5}" -f ($maxID + 1)
 
                 # Create prescription with "Pending Review" status
                 $newPrescription = [PSCustomObject]@{
